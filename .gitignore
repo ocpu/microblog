@@ -2,6 +2,8 @@
 app.db
 aws_keys.yml
 logs/
+.vscode/
+.history/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
