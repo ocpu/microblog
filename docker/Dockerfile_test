@@ -1,0 +1,30 @@
+FROM python:3.6-alpine
+
+RUN apk --no-cache add libc-dev
+RUN adduser -D microblog
+
+WORKDIR /home/microblog
+
+COPY pytest.ini pytest.ini
+COPY requirements.txt requirements.txt
+COPY requirements requirements
+RUN python -m venv venv
+RUN apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
+  && venv/bin/pip install --upgrade pip \
+  && venv/bin/pip install -r requirements/test.txt \
+  && apk del build-dependencies
+RUN venv/bin/pip install gunicorn==19.9.0 pymysql>=0.9.3
+
+COPY app app
+COPY tests tests
+COPY migrations migrations
+COPY microblog.py .pylintrc test.sh ./
+RUN chmod +x test.sh
+
+ENV FLASK_APP microblog.py
+
+RUN chown -R microblog:microblog ./
+USER microblog
+
+EXPOSE 5000
+ENTRYPOINT ["./test.sh"]
