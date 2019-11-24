@@ -1,0 +1,25 @@
+FROM python:3.6-alpine
+
+RUN apk --no-cache add libc-dev
+RUN adduser -D microblog
+
+WORKDIR /home/microblog
+
+COPY requirements.txt requirements.txt
+COPY requirements requirements
+RUN python -m venv venv
+RUN venv/bin/pip install -r requirements.txt
+RUN venv/bin/pip install gunicorn==19.9.0
+
+COPY app app
+COPY migrations migrations
+COPY microblog.py boot.sh ./
+RUN chmod +x boot.sh
+
+ENV FLASK_APP microblog.py
+
+RUN chown -R microblog:microblog ./
+USER microblog
+
+EXPOSE 5000
+ENTRYPOINT ["./boot.sh"]
