@@ -20,6 +20,7 @@ services:
       - DATABASE_URL=mysql+pymysql://microblog:passwd@mysql/microblog
     ports: 
       - 8000:5000
+    restart: always
   test_mysql:
     image: mysql/mysql-server:5.7
     expose:
