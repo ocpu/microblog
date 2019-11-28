@@ -18,7 +18,7 @@ jobs:
               python3 -m venv venv
               . venv/bin/activate
               make install-test
-              ./test.sh
+              bash ./test.sh
   build:
     executor: docker-publisher
     steps:
