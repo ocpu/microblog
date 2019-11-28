@@ -6,6 +6,14 @@ executors:
     docker:
       - image: circleci/buildpack-deps:stretch
 jobs:
+  test:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Test
+          command: docker-compose up test
   build:
     executor: docker-publisher
     steps:
@@ -56,7 +64,13 @@ workflows:
   version: 2
   build-master:
     jobs:
+      - test:
+          filters:
+            branches:
+              only: master
       - build:
+          requires:
+            - test
           filters:
             branches:
               only: master
@@ -68,7 +82,15 @@ workflows:
               only: master
   build-tags:
     jobs:
+      - test:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - build:
+          requires:
+            - test
           filters:
             tags:
               only: /^v.*/
