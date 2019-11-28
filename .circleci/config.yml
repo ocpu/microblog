@@ -67,19 +67,19 @@ workflows:
       - test:
           filters:
             branches:
-              only: master
+              only: ci-test
       - build:
           requires:
             - test
           filters:
             branches:
-              only: master
+              only: ci-test
       - publish-latest:
           requires:
             - build
           filters:
             branches:
-              only: master
+              only: ci-test
   build-tags:
     jobs:
       - test:
