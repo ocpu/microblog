@@ -1,5 +1,5 @@
 ---
-    keypair: aws
+    keypair: id_rsa
     image: ami-0f5c5066b40f2414e
     instances:
       - instance_type: t2.micro
