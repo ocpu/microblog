@@ -1,0 +1,79 @@
+---
+- name: Set root password
+  user:
+    name: root
+    password: "{{ root_password }}"
+
+- name: Upgrade packages
+  apt:
+    force_apt_get: true
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: 'yes'
+
+- name: Install packages
+  apt:
+    force_apt_get: true
+    name: "{{ packages }}"
+
+- name: Copy unattended upgrades settings
+  copy:
+    src: files/apt_periodic
+    dest: /etc/apt/apt.conf.d/10periodic
+
+- name: Make user
+  user:
+    name: "{{ server_user }}"
+    password: "{{ server_user_pass }}"
+    groups: "{{ server_user_groups }}"
+    shell: /bin/bash
+    state: present
+  
+- name: Add ssh key to user
+  authorized_key:
+    user: "{{ server_user }}"
+    key: "{{ lookup('file', item) }}"
+    state: present
+  with_items: "{{ ssh_key_locations }}"
+  
+- name: Disallow root ssh access
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regex: ^PermitRootLogin
+    line: PermitRootLogin no
+    state: present
+  notify:
+    - restart ssh
+  
+- name: Disallow password ssh login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regex: ^PasswordAuthentication
+    line: PasswordAuthentication no
+    state: present
+  notify:
+    - restart ssh
+
+- meta: flush_handlers
+
+- name: Add user to sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: "{{ server_user }} ALL"
+    line: "{{ server_user }} ALL=(ALL) NOPASSWD:ALL"
+    state: present
+
+- name: Only allow user to ssh
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regex: ^AllowUsers
+    line: "AllowUsers {{ server_user }}"
+    state: present
+
+- name: Remove default user
+  remote_user: "{{ server_user }}"
+  user:
+    name: admin
+    state: absent
+    force: yes
+    remove: yes

@@ -1,3 +1,5 @@
 ---
 -   import_playbook: terminate_ec2.yml
 -   import_playbook: provision.yml
+-   import_playbook: gather_aws_instances.yml
+-   import_playbook: 10-first-minutes.yml
