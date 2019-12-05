@@ -1,4 +1,6 @@
 ---
+admin_email: martin.hovre@opencubes.io
+load_balancer_method: least_conn
 database_root_password: some secret
 database_name: microblog
 database_user: microblog
