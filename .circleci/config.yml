@@ -65,6 +65,34 @@ jobs:
             docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
             docker push $IMAGE_NAME:latest
             docker push $IMAGE_NAME:$IMAGE_TAG
+  deploy-latest:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - restore_cache:
+         keys:
+           - pip-{{ checksum "requirements/deploy.txt" }}
+           - pip-
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get install python3-venv
+            python3 -m venv venv
+            . venv/bin/activate
+            make install-deploy
+      - save_cache:
+          paths:
+            - ./venv
+          key: pip-{{ checksum "requirements/deploy.txt" }}
+      - run: echo "source $(pwd)/venv/bin/activate" >> $BASH_ENV
+      - run:
+          name: Create aws_keys.yml
+          command: echo -e "aws_access_key:\n $AWS_ACCESS_KEY\naws_secret_key:\n $AWS_SECRET_KEY\naws_session_token:\n $AWS_SECURITY_TOKEN" > ansible/aws_keys.yml
+      - run:
+          name: Update app server
+          command: |
+            cd ansible
+            ansible-playbook gather_aws_instances.yml app-server.yml
 workflows:
   version: 2
   build-master:
@@ -82,6 +110,12 @@ workflows:
       - publish-latest:
           requires:
             - build
+          filters:
+            branches:
+              only: master
+      - deploy-latest:
+          requires:
+            - publish-latest
           filters:
             branches:
               only: master
