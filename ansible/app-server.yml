@@ -1,0 +1,7 @@
+---
+- hosts: appServer
+  remote_user: "{{ server_user }}"
+  become: yes
+  become_method: sudo
+  roles:
+    - app_server
