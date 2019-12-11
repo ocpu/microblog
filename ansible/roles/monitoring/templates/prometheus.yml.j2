@@ -71,3 +71,12 @@ scrape_configs:
 {% for ip in groups["loadBalancer"] %}
           - {{ ip }}:9113
 {% endfor %}
+
+
+
+  - job_name: 'app-server'
+    static_configs:
+      - targets: 
+{% for ip in groups["appServer"] %}
+          - {{ ip }}:9102
+{% endfor %}

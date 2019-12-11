@@ -22,4 +22,5 @@ RUN chown -R microblog:microblog ./
 USER microblog
 
 EXPOSE 5000
+EXPOSE 9125
 ENTRYPOINT ["./boot.sh"]

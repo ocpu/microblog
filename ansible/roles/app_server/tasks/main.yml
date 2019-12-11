@@ -2,12 +2,26 @@
 - name: Run Application
   docker_container:
     name: application
-    image: ocpu/microblog
+    image: ocpu/microblog:latest
     state: started
+    network_mode: host
+    pull: yes
     restart: yes
-    ports:
-      - 8000:5000
+    recreate: yes
     env:
       SECRET_KEY: my-secret-key
       DATABASE_URL: "mysql+pymysql://microblog:passwd@{{ groups.database[0] }}:3306/microblog"
-    
+
+- name: Setup statsd config
+  copy:
+    src: files/statsd.conf
+    dest: /home/{{ server_user }}/statsd.conf
+
+- name: Start stats service
+  docker_container:
+    name: Stats
+    image: prom/statsd-exporter
+    network_mode: host
+    volumes:
+      - /home/{{ server_user }}/statsd.conf:/statsd/statsd.conf
+    command: --statsd.mapping-config=/statsd/statsd.conf
