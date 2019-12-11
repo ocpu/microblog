@@ -1,0 +1,41 @@
+---
+- name: Check if docker already exists.
+  stat:
+    path: /usr/bin/docker
+  register: docker_installation
+
+- name: Install Docker dependencies
+  apt:
+    force_apt_get: true
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+  when: not docker_installation.stat.exists
+
+- name: Add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+  when: not docker_installation.stat.exists
+
+- name: Add Docker repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/debian stretch stable
+    state: present
+  when: not docker_installation.stat.exists
+
+- name: Install Docker and pip
+  apt:
+    force_apt_get: true
+    name:
+      - docker-ce
+      - python-pip
+  when: not docker_installation.stat.exists
+
+- name: Install docker for python
+  pip:
+    name:
+      - docker
+  when: not docker_installation.stat.exists
