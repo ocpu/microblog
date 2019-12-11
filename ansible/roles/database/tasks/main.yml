@@ -12,3 +12,31 @@
       MYSQL_DATABASE: "{{ database_name }}"
       MYSQL_USER: "{{ database_user }}"
       MYSQL_PASSWORD: "{{ database_user_password }}"
+  register: docker_db
+
+- name: Create metrics MySQL user
+  command: >-
+    docker exec {{ docker_db.ansible_facts.docker_container.Id }}
+    mysql --user=root --password="{{ database_root_password }}" --execute="
+    CREATE USER IF NOT EXISTS '{{ database_metrics_user }}'@'%' IDENTIFIED BY '{{ database_metrics_user_password }}' WITH MAX_USER_CONNECTIONS 3;
+    GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '{{ database_metrics_user }}'@'%';
+    GRANT SELECT ON performance_schema.* TO '{{ database_metrics_user }}'@'%';
+    "
+
+- name: Start metrics
+  docker_container:
+    name: Metrics
+    image: prom/mysqld-exporter:latest
+    network_mode: host
+    state: started
+    restart: yes
+    ports:
+      - 9104:9104
+    env:
+      DATA_SOURCE_NAME: "{{ database_metrics_user }}:{{ database_metrics_user_password }}@(localhost:3306)/"
+    command: >-
+      --collect.auto_increment.columns
+      --collect.binlog_size
+      --collect.engine_innodb_status
+      --collect.engine_tokudb_status
+      --collect.global_status

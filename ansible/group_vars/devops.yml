@@ -5,6 +5,8 @@ database_root_password: some secret
 database_name: microblog
 database_user: microblog
 database_user_password: passwd
+database_metrics_user: exporter
+database_metrics_user_password: these are some metrics
 root_password: $6$sXTksKRRA9Y$c2jWDWdAy2odCrkYRBQZv0AR.zoTGm3wTip1kn9COfdc3DgJyBmPjpilgND7fvdBvJvNEOycHX5TkF6MX0BsL.
 server_user: deploy
 server_user_pass: $6$db2u1k9VJYGksz$t4IaIiNm0xIgX3EwMX0p3iVHOe4PwJQgJ9YCQGKu6NrVsNf7UAmswYOQdGGeBRBTetctOydWJdKcFWmoWsfU01

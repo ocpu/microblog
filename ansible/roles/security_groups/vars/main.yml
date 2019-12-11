@@ -45,3 +45,11 @@
             from_port: 3306
             to_port: 3306
             cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 9104
+            to_port: 9104
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 9100
+            to_port: 9100
+            cidr_ip: 0.0.0.0/0
