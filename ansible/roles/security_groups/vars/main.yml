@@ -53,3 +53,26 @@
             from_port: 9100
             to_port: 9100
             cidr_ip: 0.0.0.0/0
+        - name: monitoring
+          description: SG for the monitoring node
+          port_rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 9090
+            to_port: 9090
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 9093
+            to_port: 9093
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 9100
+            to_port: 9100
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 3000
+            to_port: 3000
+            cidr_ip: 0.0.0.0/0

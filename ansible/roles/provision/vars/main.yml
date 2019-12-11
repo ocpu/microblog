@@ -26,3 +26,11 @@
           - "database"
         security_group: database
         count: 1
+      - instance_type: t2.micro
+        instance_tags:
+          project: "{{  project_name  }}"
+          name: "monitoring"
+        instance_ids:
+          - "monitoring"
+        security_group: monitoring
+        count: 1

@@ -1,0 +1,16 @@
+---
+- name: Create Prometheus configuration
+  template:
+    src: templates/prometheus.yml.j2
+    dest: /home/{{ server_user }}/prometheus.yml
+
+- name: Start Prometheus
+  docker_container:
+    name: Prometheus
+    image: prom/prometheus:latest
+    restart: yes
+    state: started
+    ports:
+      - 9090:9090
+    volumes:
+      - /home/{{ server_user }}/prometheus.yml:/etc/prometheus/prometheus.yml
