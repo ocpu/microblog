@@ -1,0 +1,69 @@
+---
+- name: Check if node_exporter is already installed
+  stat:
+    path: /usr/local/bin/node_exporter
+  register: node_exporter
+
+- name: Create node_exporter user
+  user:
+    name: node_exporter
+    state: present
+    shell: /bin/false
+    system: true
+  when: not node_exporter.stat.exists
+
+- name: Download node_exporter
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+    dest: /home/{{ server_user }}
+  when: not node_exporter.stat.exists
+
+- name: Create extraction location
+  file:
+    path: /home/{{ server_user }}/node_exporter-{{ node_exporter_version }}.linux-amd64
+    state: directory
+  when: not node_exporter.stat.exists
+
+- name: Extract node_exporter
+  unarchive:
+    src: /home/{{ server_user }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+    dest: /home/{{ server_user }}
+    remote_src: yes
+  when: not node_exporter.stat.exists
+
+- name: Copy node_exporter to /usr/local/bin
+  copy:
+    src: /home/{{ server_user }}/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter
+    dest: /usr/local/bin/node_exporter
+    remote_src: yes
+  when: not node_exporter.stat.exists
+
+- name: Set permissions on node_exporter
+  file:
+    path: /usr/local/bin/node_exporter
+    owner: node_exporter
+    group: node_exporter
+    mode: '0755'
+  when: not node_exporter.stat.exists
+
+- name: Remove node_exporter rest files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - node_exporter-{{ node_exporter_version }}.linux-amd64
+    - node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+  when: not node_exporter.stat.exists
+
+- name: Copy node exporter service file
+  copy:
+    src: files/node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+  when: not node_exporter.stat.exists
+
+- name: Start node exporter service
+  service:
+    name: node_exporter
+    enabled: yes
+    state: started
+  when: not node_exporter.stat.exists

@@ -5,4 +5,5 @@
   become_method: sudo
   roles:
     - docker
+    - node_exporter
     - load_balancer
