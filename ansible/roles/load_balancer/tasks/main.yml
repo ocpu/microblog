@@ -48,3 +48,17 @@
   service:
     name: nginx
     state: started
+
+- name: Start metrics gathering
+  docker_container:
+    name: NginxMetrics
+    image: nginx/nginx-prometheus-exporter:0.4.2
+    state: started
+    restart: yes
+    ports:
+      - 9113:9113
+    command: >-
+      -nginx.scrape-uri=https://{{ domain_name }}/metrics
+      -nginx.retries=10
+      -nginx.ssl-verify=false
+      -web.telemetry-path=/prometheus

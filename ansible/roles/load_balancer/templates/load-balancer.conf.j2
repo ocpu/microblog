@@ -28,6 +28,10 @@ http {
     ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
+    location /metrics {
+      stub_status on;
+    }
+    
     location / {
       proxy_pass http://app-hosts;
     }

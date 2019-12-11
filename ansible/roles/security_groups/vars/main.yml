@@ -15,6 +15,14 @@
             from_port: 443
             to_port: 443
             cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 9100
+            to_port: 9100
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 9113
+            to_port: 9113
+            cidr_ip: 0.0.0.0/0
         - name: app-server
           description: SG for the application server
           port_rules:
