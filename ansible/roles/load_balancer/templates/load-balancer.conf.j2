@@ -1,7 +1,9 @@
 http {
   upstream app-hosts {
     {{ load_balancer_method }};
-    server {{ groups['appServer'][0] }}:8000;
+{% for ip in groups['appServer'] %}
+    server {{ ip }}:5000;
+{% endfor %}
   }
 
   access_log /var/log/nginx/access.log;

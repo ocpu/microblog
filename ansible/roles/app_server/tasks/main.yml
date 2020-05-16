@@ -2,7 +2,7 @@
 - name: Run Application
   docker_container:
     name: application
-    image: ocpu/microblog:latest
+    image: ocpu/microblog
     state: started
     network_mode: host
     pull: yes
